@@ -1,0 +1,14 @@
+# Swift / macOS 빌드 결과물
+.build/
+.swiftpm/
+DerivedData/
+build/
+*.xcuserstate
+.DS_Store
+
+# 실수로 커밋되면 안 되는 금고 파일
+*.pvault
+*.pvault.bak
+
+# 평문 내보내기 파일
+비밀번호-평문-*.csv
