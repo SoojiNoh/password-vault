@@ -32,9 +32,11 @@ struct SettingsView: View {
 
 struct SecuritySettingsTab: View {
 
+    @EnvironmentObject private var state: AppState
     @AppStorage(PreferenceKey.autoLockMinutes) private var autoLockMinutes: Int = 5
     @AppStorage(PreferenceKey.clipboardClearSeconds) private var clipboardClearSeconds: Int = 30
     @AppStorage(PreferenceKey.lockOnSleep) private var lockOnSleep: Bool = true
+    @AppStorage(PreferenceKey.autofillEnabled) private var autofillEnabled: Bool = true
 
     var body: some View {
         Form {
@@ -66,7 +68,19 @@ struct SecuritySettingsTab: View {
             Divider().padding(.vertical, 4)
 
             Toggle("잠자기·화면 잠금 때 금고도 잠그기", isOn: $lockOnSleep)
+
+            Section {
+                Toggle("브라우저 자동완성 허용", isOn: $autofillEnabled)
+                Text("""
+                    크롬 확장이 이 금고에 물어볼 수 있게 합니다. \
+                    잠겨 있는 동안에는 아무것도 내주지 않고, 물어본 주소에 해당하는 항목만 보냅니다. \
+                    채워 넣는 것은 목록에서 직접 고를 때만 일어납니다.
+                    """)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
+        .onChange(of: autofillEnabled) { _ in state.startAutofillIfEnabled() }
         .formStyle(.grouped)
         .padding(.vertical, 6)
     }

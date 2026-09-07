@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "비밀번호 금고 자동완성",
+  "version": "1.0.0",
+  "description": "맥에 설치한 '비밀번호 금고' 앱에 저장한 로그인을 이 브라우저에서 채워 넣습니다.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsS/B3huU9zE1d0fbMBrBNYdLFyGbclhkBnKCBTxiiLuUdaYqZ/uN9FXpd2yPxSztdiPhauFWL493SYy74CXYrKZoxoKMqkEiIn/2D9vjRQg+PWzQN9R+RtBwXqpDnvU1vtMszaRSD6Eg4C/FUZYIcBmitDh/vwal7vzvViQNxq7VVQDh6q9LrGI3VpviOmucssaaK/uLuwhjyrJqKRk7CLbNU6Pse/mZc/BgmS+ws2Ow1wF7A0hUPFAqtZuqCMh5rh6l7eDbA+BWoPFTexscJeoZna4fAmGiHH9/xzP/ko9rK3nwDg7xkSaPqL9DJ8sc3L/eVfni802Ih5eCkDsPzwIDAQAB",
+  "minimum_chrome_version": "116",
+  "permissions": ["nativeMessaging", "storage"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_title": "비밀번호 금고" },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ]
+}

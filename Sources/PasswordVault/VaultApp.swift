@@ -37,6 +37,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         true
     }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        // 브라우저용 소켓 파일을 남기지 않고 나갑니다.
+        AutofillServer.removeStaleSocket()
+    }
 }
 
 /// 메뉴 막대와 단축키.

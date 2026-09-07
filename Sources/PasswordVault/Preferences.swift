@@ -7,6 +7,7 @@ enum PreferenceKey {
     static let clipboardClearSeconds = "clipboardClearSeconds"
     static let lockOnSleep = "lockOnSleep"
     static let vaultPath = "vaultPath"
+    static let autofillEnabled = "autofillEnabled"
 }
 
 enum Preferences {
@@ -16,6 +17,7 @@ enum Preferences {
             PreferenceKey.autoLockMinutes: 5,
             PreferenceKey.clipboardClearSeconds: 30,
             PreferenceKey.lockOnSleep: true,
+            PreferenceKey.autofillEnabled: true,
         ])
     }
 
@@ -31,6 +33,12 @@ enum Preferences {
 
     static var lockOnSleep: Bool {
         UserDefaults.standard.bool(forKey: PreferenceKey.lockOnSleep)
+    }
+
+    /// 크롬 확장이 이 금고에 물어볼 수 있게 할지. 꺼 두면 아무것도 내주지 않습니다.
+    static var autofillEnabled: Bool {
+        get { UserDefaults.standard.bool(forKey: PreferenceKey.autofillEnabled) }
+        set { UserDefaults.standard.set(newValue, forKey: PreferenceKey.autofillEnabled) }
     }
 
     /// 사용자가 금고 위치를 옮겼다면 그 경로. 없으면 기본 위치를 씁니다.

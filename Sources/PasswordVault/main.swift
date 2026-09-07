@@ -9,6 +9,11 @@ if CommandLine.arguments.contains("--selftest") {
     exit(SelfTest.run() ? 0 : 1)
 }
 
+// 크롬이 네이티브 메시징으로 직접 띄우는 모드. 창을 만들지 않습니다.
+if CommandLine.arguments.contains("--native-host") {
+    AutofillNativeHost.run()
+}
+
 if CommandLine.arguments.contains("--version") {
     print("비밀번호 금고 \(AppInfo.version) (\(AppInfo.build))")
     exit(0)

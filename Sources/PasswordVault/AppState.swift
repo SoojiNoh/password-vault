@@ -93,6 +93,13 @@ final class AppState: ObservableObject {
     private var activityMonitor: Any?
     private var sleepObservers: [NSObjectProtocol] = []
 
+    /// 브라우저 자동완성용 소켓 서버. 잠금이 풀린 동안에만 떠 있습니다.
+    private lazy var autofillServer = AutofillServer { [weak self] pageURL in
+        guard let self, self.phase == .unlocked else { return nil }   // 잠겨 있으면 아무것도 안 준다
+        guard Preferences.autofillEnabled else { return nil }
+        return AutofillMatch.candidates(for: pageURL, in: self.items)
+    }
+
     var vaultURL: URL {
         if let path = Preferences.vaultPath, !path.isEmpty {
             return URL(fileURLWithPath: path)
@@ -104,6 +111,7 @@ final class AppState: ObservableObject {
         Preferences.registerDefaults()
         refreshPhaseForCurrentFile()
         installSleepObservers()
+        startAutofillIfEnabled()
     }
 
     deinit {
@@ -152,6 +160,7 @@ final class AppState: ObservableObject {
                     self.items = []
                     self.phase = .unlocked
                     self.beginAutoLockWatch()
+                    self.startAutofillIfEnabled()
                     self.show(Toast(text: "금고를 만들었습니다."))
                 case .failure(let error):
                     self.unlockError = Self.message(for: error)
@@ -183,6 +192,7 @@ final class AppState: ObservableObject {
                     self.selectedItemID = nil
                     self.phase = .unlocked
                     self.beginAutoLockWatch()
+                    self.startAutofillIfEnabled()
                 case .failure(let error):
                     self.unlockError = Self.message(for: error)
                 }
@@ -195,6 +205,8 @@ final class AppState: ObservableObject {
         assertMain()
         endAutoLockWatch()
         Clipboard.clearIfHoldingSecret()
+        // 소켓은 열어 둔다. 잠긴 동안에는 조회 함수가 nil 을 돌려주므로 아무것도 나가지 않고,
+        // 확장은 "잠겨 있다"는 사실만 알아 사용자에게 안내할 수 있다.
 
         vault = nil
         items = []
@@ -206,6 +218,19 @@ final class AppState: ObservableObject {
     }
 
     var isUnlocked: Bool { phase == .unlocked }
+
+    /// 설정에서 켜 두었을 때만 브라우저용 통로를 엽니다.
+    ///
+    /// 잠겨 있어도 열어 둡니다. 잠긴 동안에는 조회 함수가 `nil` 을 돌려주므로
+    /// 항목은 하나도 나가지 않고, 확장은 "잠겨 있으니 풀어 달라"고 안내만 합니다.
+    func startAutofillIfEnabled() {
+        assertMain()
+        if Preferences.autofillEnabled {
+            autofillServer.start()
+        } else {
+            autofillServer.stop()
+        }
+    }
 
     // MARK: - 항목 다루기
 
