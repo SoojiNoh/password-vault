@@ -14,6 +14,15 @@ import SwiftUI
 ///
 /// `allowedInputSourceLocales` 에 로마자를 지정해 두면 이 칸에 들어올 때 시스템이 알아서
 /// 영문 입력으로 바꿔 줍니다. 사용자가 한/영 키를 신경 쓸 필요가 없어집니다.
+///
+/// 실측(2026-09-09, 두벌식 켠 채 진짜 키코드로 `abc123` 입력):
+///
+///     일반 TextField      → 뮻123    (영문자가 한글로 조합됨)
+///     예전 SecureField    → 123      (영문자가 통째로 사라짐 ← 제보된 증상)
+///     이 RomanSecureField → abc123   (정상)
+///
+/// 실제 앱에서도 두벌식 상태로 `seoul2026` 을 쳐서 금고를 만든 뒤,
+/// 그 비밀번호로 열리는 것까지 확인했습니다(숫자만인 `2026` 은 거부).
 struct RomanSecureField: NSViewRepresentable {
 
     let placeholder: String
