@@ -92,13 +92,13 @@ struct CreateVaultView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 10) {
-                    SecureField("마스터 비밀번호", text: $password)
-                        .textFieldStyle(.roundedBorder)
+                    RomanSecureField(placeholder: "마스터 비밀번호", text: $password)
+                        .frame(height: 22)
                         .focused($focusedField, equals: .password)
                         .onSubmit { focusedField = .confirmation }
 
-                    SecureField("한 번 더 입력", text: $confirmation)
-                        .textFieldStyle(.roundedBorder)
+                    RomanSecureField(placeholder: "한 번 더 입력", text: $confirmation, onSubmit: create)
+                        .frame(height: 22)
                         .focused($focusedField, equals: .confirmation)
                         .onSubmit(create)
 
@@ -195,8 +195,8 @@ struct UnlockView: View {
                 Text(AppInfo.displayName)
                     .font(.title2.weight(.semibold))
 
-                SecureField("마스터 비밀번호", text: $password)
-                    .textFieldStyle(.roundedBorder)
+                RomanSecureField(placeholder: "마스터 비밀번호", text: $password, onSubmit: unlock)
+                    .frame(height: 22)
                     .frame(width: 300)
                     .focused($isFocused)
                     .onSubmit(unlock)

@@ -28,20 +28,14 @@ struct ChangeMasterPasswordView: View {
                 .fixedSize(horizontal: false, vertical: true)
 
             VStack(alignment: .leading, spacing: 8) {
-                SecureField("현재 마스터 비밀번호", text: $current)
-                    .textFieldStyle(.roundedBorder)
-                    .focused($focusedField, equals: .current)
-                    .onSubmit { focusedField = .new }
+                RomanSecureField(placeholder: "현재 마스터 비밀번호", text: $current)
+                    .frame(height: 22)
 
-                SecureField("새 마스터 비밀번호", text: $new)
-                    .textFieldStyle(.roundedBorder)
-                    .focused($focusedField, equals: .new)
-                    .onSubmit { focusedField = .confirmation }
+                RomanSecureField(placeholder: "새 마스터 비밀번호", text: $new)
+                    .frame(height: 22)
 
-                SecureField("새 비밀번호 한 번 더", text: $confirmation)
-                    .textFieldStyle(.roundedBorder)
-                    .focused($focusedField, equals: .confirmation)
-                    .onSubmit(apply)
+                RomanSecureField(placeholder: "새 비밀번호 한 번 더", text: $confirmation, onSubmit: apply)
+                    .frame(height: 22)
 
                 if !new.isEmpty {
                     StrengthMeter(entropyBits: strength.entropyBits, level: strength.level)

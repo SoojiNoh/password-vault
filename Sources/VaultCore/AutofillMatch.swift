@@ -78,4 +78,39 @@ public enum AutofillMatch {
             }
             .map(\.item)
     }
+
+    /// 브라우저에서 방금 로그인한 것을 저장하려 할 때,
+    /// **이미 있는 항목을 갱신해야 하는지** 판단합니다.
+    ///
+    /// 같은 사이트에 같은 아이디가 이미 있으면 새로 만들지 않고 그것을 고칩니다.
+    /// 안 그러면 비밀번호를 바꿀 때마다 같은 사이트 항목이 계속 쌓입니다.
+    public static func existingIndex(for pageURL: String,
+                                     username: String,
+                                     in items: [VaultItem]) -> Int? {
+        guard let page = normalizedHost(pageURL) else { return nil }
+        let user = username.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        var best: (index: Int, score: Int)?
+        for (index, item) in items.enumerated() {
+            guard item.kind == .login else { continue }
+            // 아이디까지 같아야 "같은 계정"입니다. 대소문자는 무시합니다.
+            guard item.username.compare(user, options: .caseInsensitive) == .orderedSame else { continue }
+
+            for raw in item.urls {
+                guard let stored = normalizedHost(raw), hostMatches(stored: stored, page: page) else { continue }
+                if best == nil || stored.count > best!.score { best = (index, stored.count) }
+            }
+        }
+        return best?.index
+    }
+
+    /// 브라우저에서 받은 로그인으로 새 항목을 만듭니다. 제목은 사이트 이름을 씁니다.
+    public static func newItem(for pageURL: String, username: String, password: String) -> VaultItem {
+        let host = normalizedHost(pageURL) ?? pageURL
+        var item = VaultItem(kind: .login, title: host)
+        item.username = username
+        item.password = password
+        item.urls = ["https://" + host]
+        return item
+    }
 }
